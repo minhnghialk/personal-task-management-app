@@ -54,7 +54,6 @@ export const RegisterPage = () => {
         >
           <FormInput
             label="Email"
-            type="email"
             name="email"
             placeholder="Nhập email"
             error={errors.email}
