@@ -1,10 +1,15 @@
+// src/tests/components/RegisterPage.test.jsx
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import "@testing-library/jest-dom";
-import { RegisterPage } from "../../auth/RegisterPage";
+import { Provider } from "react-redux";
+import { BrowserRouter } from "react-router-dom";
+import { configureStore } from "@reduxjs/toolkit";
 
-// Mock supabase client
-jest.mock("../../api/supabaseClient.js", () => ({
+import { RegisterPage } from "../../auth/RegisterPage";
+import authReducer from "../../auth/authSlice";
+
+// Mock Supabase
+jest.mock("../../api/supabaseClient", () => ({
   supabase: {
     auth: {
       signUp: jest.fn().mockResolvedValue({ error: null }),
@@ -12,155 +17,162 @@ jest.mock("../../api/supabaseClient.js", () => ({
   },
 }));
 
-describe("RegisterPage", () => {
-  test("render đúng các input và button", () => {
-    render(<RegisterPage />);
+const createTestStore = (preloadedState) =>
+  configureStore({
+    reducer: { auth: authReducer },
+    preloadedState,
+  });
 
-    expect(screen.getByText("Đăng ký tài khoản")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Nhập email")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Nhập mật khẩu")).toBeInTheDocument();
+const renderWithProviders = (ui, preloadedState) => {
+  const store = createTestStore(
+    preloadedState || { auth: { loading: false, error: null } }
+  );
+  return {
+    store,
+    ...render(
+      <Provider store={store}>
+        <BrowserRouter>{ui}</BrowserRouter>
+      </Provider>
+    ),
+  };
+};
+
+describe("RegisterPage Component - Validate Tests", () => {
+  test("render đúng các input và button", () => {
+    renderWithProviders(<RegisterPage />);
+    expect(screen.getByPlaceholderText(/Nhập email/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/Nhập mật khẩu/i)).toBeInTheDocument();
     expect(
-      screen.getByPlaceholderText("Xác nhận mật khẩu")
+      screen.getByPlaceholderText(/Xác nhận mật khẩu/i)
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /Đăng ký/i })
+      screen.getByRole("button", { name: /đăng ký/i })
     ).toBeInTheDocument();
   });
 
   test("hiển thị lỗi khi submit form rỗng", async () => {
-    render(<RegisterPage />);
-    fireEvent.click(screen.getByRole("button", { name: /Đăng ký/i }));
+    renderWithProviders(<RegisterPage />);
 
-    expect(await screen.findByText("Vui lòng nhập email")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /đăng ký/i }));
+
     expect(
-      await screen.findByText("Vui lòng nhập mật khẩu")
+      await screen.findByText(/vui lòng nhập email/i, { exact: false })
     ).toBeInTheDocument();
     expect(
-      await screen.findByText("Vui lòng nhập lại mật khẩu")
+      await screen.findByText(/vui lòng nhập mật khẩu/i, { exact: false })
     ).toBeInTheDocument();
     expect(
-      await screen.findByText("Bạn phải đồng ý điều khoản")
+      await screen.findByText(/vui lòng nhập lại mật khẩu/i, { exact: false })
     ).toBeInTheDocument();
-  });
-
-  test("validate mật khẩu nhập lại không khớp", async () => {
-    render(<RegisterPage />);
-
-    fireEvent.input(screen.getByPlaceholderText("Nhập email"), {
-      target: { value: "test@example.com" },
-    });
-    fireEvent.input(screen.getByPlaceholderText("Nhập mật khẩu"), {
-      target: { value: "12345678" },
-    });
-    fireEvent.input(screen.getByPlaceholderText("Xác nhận mật khẩu"), {
-      target: { value: "12345679" },
-    });
-    fireEvent.click(screen.getByRole("checkbox"));
-    fireEvent.click(screen.getByRole("button", { name: /Đăng ký/i }));
-
     expect(
-      await screen.findByText("Mật khẩu nhập lại không khớp")
+      await screen.findByText(/bạn phải đồng ý điều khoản/i, { exact: false })
     ).toBeInTheDocument();
   });
 
   test("validate email không hợp lệ", async () => {
-    render(<RegisterPage />);
+    renderWithProviders(<RegisterPage />);
 
-    fireEvent.input(screen.getByPlaceholderText("Nhập email"), {
-      target: { value: "abc@" },
-    });
-    fireEvent.input(screen.getByPlaceholderText("Nhập mật khẩu"), {
-      target: { value: "12345678" },
-    });
-    fireEvent.input(screen.getByPlaceholderText("Xác nhận mật khẩu"), {
-      target: { value: "12345678" },
-    });
-    fireEvent.click(screen.getByRole("checkbox"));
-    fireEvent.click(screen.getByRole("button", { name: /Đăng ký/i }));
+    const emailInput = screen.getByPlaceholderText(/Nhập email/i);
+    fireEvent.change(emailInput, { target: { value: "abc" } });
+    fireEvent.blur(emailInput);
 
-    expect(await screen.findByText("Email không hợp lệ")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("checkbox", { name: /tôi đồng ý/i }));
+
+    fireEvent.click(screen.getByRole("button", { name: /đăng ký/i }));
+
+    expect(
+      await screen.findByText(/email không hợp lệ/i, { exact: false })
+    ).toBeInTheDocument();
   });
 
   test("validate mật khẩu phải có ít nhất 8 ký tự", async () => {
-    render(<RegisterPage />);
+    renderWithProviders(<RegisterPage />);
 
-    fireEvent.input(screen.getByPlaceholderText("Nhập email"), {
-      target: { value: "test@example.com" },
-    });
-    fireEvent.input(screen.getByPlaceholderText("Nhập mật khẩu"), {
-      target: { value: "12345" },
-    });
-    fireEvent.input(screen.getByPlaceholderText("Xác nhận mật khẩu"), {
-      target: { value: "12345" },
-    });
-    fireEvent.click(screen.getByRole("checkbox"));
-    fireEvent.click(screen.getByRole("button", { name: /Đăng ký/i }));
+    const passwordInput = screen.getByPlaceholderText(/Nhập mật khẩu/i);
+    fireEvent.change(passwordInput, { target: { value: "123" } });
+    fireEvent.blur(passwordInput);
+
+    fireEvent.click(screen.getByRole("checkbox", { name: /tôi đồng ý/i }));
+    fireEvent.click(screen.getByRole("button", { name: /đăng ký/i }));
 
     expect(
-      await screen.findByText("Mật khẩu phải có ít nhất 8 ký tự")
+      await screen.findByText(/mật khẩu phải có ít nhất 8 ký tự/i, {
+        exact: false,
+      })
     ).toBeInTheDocument();
   });
 
   test("validate mật khẩu phải chứa ít nhất 1 số và 1 ký tự đặc biệt", async () => {
-    render(<RegisterPage />);
+    renderWithProviders(<RegisterPage />);
 
-    fireEvent.input(screen.getByPlaceholderText("Nhập email"), {
-      target: { value: "test@example.com" },
-    });
-    fireEvent.input(screen.getByPlaceholderText("Nhập mật khẩu"), {
-      target: { value: "abcdefgh" },
-    });
-    fireEvent.input(screen.getByPlaceholderText("Xác nhận mật khẩu"), {
-      target: { value: "abcdefgh" },
-    });
-    fireEvent.click(screen.getByRole("checkbox"));
-    fireEvent.click(screen.getByRole("button", { name: /Đăng ký/i }));
+    const passwordInput = screen.getByPlaceholderText(/Nhập mật khẩu/i);
+    fireEvent.change(passwordInput, { target: { value: "abcdefgh" } });
+    fireEvent.blur(passwordInput);
+
+    fireEvent.click(screen.getByRole("checkbox", { name: /tôi đồng ý/i }));
+    fireEvent.click(screen.getByRole("button", { name: /đăng ký/i }));
 
     expect(
       await screen.findByText(
-        "Mật khẩu phải chứa ít nhất 1 số và 1 ký tự đặc biệt"
+        /mật khẩu phải chứa ít nhất 1 số và 1 ký tự đặc biệt/i,
+        { exact: false }
       )
     ).toBeInTheDocument();
   });
 
-  test("submit thành công khi nhập đúng", async () => {
-    render(<RegisterPage />);
+  test("validate mật khẩu nhập lại không khớp", async () => {
+    renderWithProviders(<RegisterPage />);
 
-    fireEvent.input(screen.getByPlaceholderText("Nhập email"), {
-      target: { value: "test@example.com" },
+    fireEvent.change(screen.getByPlaceholderText(/Nhập mật khẩu/i), {
+      target: { value: "Abc12345!" },
     });
-    fireEvent.input(screen.getByPlaceholderText("Nhập mật khẩu"), {
-      target: { value: "12345678" },
-    });
-    fireEvent.input(screen.getByPlaceholderText("Xác nhận mật khẩu"), {
-      target: { value: "12345678" },
-    });
-    fireEvent.click(screen.getByRole("checkbox"));
-    fireEvent.click(screen.getByRole("button", { name: /Đăng ký/i }));
+    fireEvent.blur(screen.getByPlaceholderText(/Nhập mật khẩu/i));
 
-    await waitFor(() => {
-      expect(screen.queryByText("Vui lòng nhập email")).not.toBeInTheDocument();
+    fireEvent.change(screen.getByPlaceholderText(/Xác nhận mật khẩu/i), {
+      target: { value: "Wrong123!" },
     });
+    fireEvent.blur(screen.getByPlaceholderText(/Xác nhận mật khẩu/i));
+
+    fireEvent.click(screen.getByRole("checkbox", { name: /tôi đồng ý/i }));
+    fireEvent.click(screen.getByRole("button", { name: /đăng ký/i }));
+
+    expect(
+      await screen.findByText(/mật khẩu nhập lại không khớp/i, {
+        exact: false,
+      })
+    ).toBeInTheDocument();
   });
 
-  test("hiển thị lỗi khi chưa tick checkbox Điều khoản", async () => {
-    render(<RegisterPage />);
+  test("submit thành công khi nhập đúng", async () => {
+    const { store } = renderWithProviders(<RegisterPage />);
 
-    const emailInput = screen.getByLabelText(/Email/i);
-    const passwordInput = screen.getByLabelText(/Mật khẩu/i);
-    const confirmPasswordInput = screen.getByLabelText(/Nhập lại mật khẩu/i);
-    const submitButton = screen.getByRole("button", { name: /Đăng ký/i });
-
-    fireEvent.change(emailInput, { target: { value: "abc@example.com" } });
-    fireEvent.change(passwordInput, { target: { value: "12345678" } });
-    fireEvent.change(confirmPasswordInput, { target: { value: "12345678" } });
-
-    fireEvent.click(submitButton);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText("Bạn phải đồng ý điều khoản")
-      ).toBeInTheDocument();
+    fireEvent.change(screen.getByPlaceholderText(/Nhập email/i), {
+      target: { value: "test@example.com" },
     });
+    fireEvent.blur(screen.getByPlaceholderText(/Nhập email/i));
+
+    fireEvent.change(screen.getByPlaceholderText(/Nhập mật khẩu/i), {
+      target: { value: "Abc12345!" },
+    });
+    fireEvent.blur(screen.getByPlaceholderText(/Nhập mật khẩu/i));
+
+    fireEvent.change(screen.getByPlaceholderText(/Xác nhận mật khẩu/i), {
+      target: { value: "Abc12345!" },
+    });
+    fireEvent.blur(screen.getByPlaceholderText(/Xác nhận mật khẩu/i));
+
+    fireEvent.click(screen.getByRole("checkbox", { name: /tôi đồng ý/i }));
+    fireEvent.click(screen.getByRole("button", { name: /đăng ký/i }));
+
+    await waitFor(() => expect(store.getState().auth.loading).toBe(false));
+  });
+
+  test("hiển thị lỗi khi API trả về lỗi", async () => {
+    const errorState = { auth: { loading: false, error: "Email đã tồn tại" } };
+    renderWithProviders(<RegisterPage />, errorState);
+
+    expect(
+      await screen.findByText(/email đã tồn tại/i, { exact: false })
+    ).toBeInTheDocument();
   });
 });

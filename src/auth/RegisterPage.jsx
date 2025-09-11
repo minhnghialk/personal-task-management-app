@@ -1,10 +1,15 @@
+import React from "react";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { supabase } from "../api/supabaseClient";
 import { Link, useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import { FormInput } from "../components/FormInput";
+import { Checkbox } from "../components/Checkbox";
+import { ButtonLoading } from "../components/ButtonLoading";
+import { Toast } from "../components/Toast";
+import { registerUser } from "../auth/authSlice";
 
 export const RegisterPage = () => {
   const {
@@ -13,185 +18,130 @@ export const RegisterPage = () => {
     watch,
     formState: { errors },
   } = useForm();
-
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.auth);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [serverError, setServerError] = useState("");
   const password = watch("password");
 
-  const onSubmit = async (data) => {
-    setLoading(true);
-    setServerError("");
-    try {
-      const { email, password } = data;
-      const { error } = await supabase.auth.signUp({ email, password });
-      if (error) {
-        setServerError(error.message);
-      } else {
-        toast.success(
-          "Đăng ký thành công! Vui lòng kiểm tra email để xác nhận.",
-          {
-            position: "top-center",
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          }
-        );
-        setTimeout(() => {
-          navigate("/login");
-        }, 4000);
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("Có lỗi xảy ra. Vui lòng thử lại!");
-    } finally {
-      setLoading(false);
-    }
+  const toggleShow = (type) => {
+    if (type === "password") setShowPassword((prev) => !prev);
+    else setShowConfirmPassword((prev) => !prev);
   };
+
+  const onSubmit = (data) => {
+    dispatch(registerUser({ email: data.email, password: data.password }))
+      .unwrap()
+      .then(() => {
+        toast.success("Đăng ký thành công! Vui lòng kiểm tra email.");
+        setTimeout(() => navigate("/login"), 4000);
+      })
+      .catch((err) => toast.error(err || "Có lỗi xảy ra. Vui lòng thử lại!"));
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-md bg-white p-6 rounded-2xl shadow-md">
         <h1 className="text-3xl md:text-4xl font-bold text-center mb-6 text-gray-800">
           Đăng ký tài khoản
         </h1>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Email */}
-          <label className="block">
-            <span className="text-gray-700 text-sm font-medium">Email</span>
-            <input
-              type="email"
-              {...register("email", {
-                required: "Vui lòng nhập email",
-                pattern: {
-                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: "Email không hợp lệ",
-                },
-              })}
-              className="mt-1 block w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              placeholder="Nhập email"
-            />
-            {errors.email && (
-              <p className="text-sm text-red-500 mt-1">
-                {errors.email.message}
-              </p>
-            )}
-          </label>
 
-          {/* Mật khẩu */}
-          <label className="block">
-            <span className="text-gray-700 text-sm font-medium">Mật khẩu</span>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                {...register("password", {
-                  required: "Vui lòng nhập mật khẩu",
-                  minLength: {
-                    value: 8,
-                    message: "Mật khẩu phải có ít nhất 8 ký tự",
-                  },
-                  pattern: {
-                    value: /^(?=.*[0-9])(?=.*[!@#$%^&*])/,
-                    message:
-                      "Mật khẩu phải chứa ít nhất 1 số và 1 ký tự đặc biệt",
-                  },
-                })}
-                className="mt-1 block w-full rounded-lg border border-gray-300 p-2 pr-10 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                placeholder="Nhập mật khẩu"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-gray-700"
-              >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
-            </div>
-            {errors.password && (
-              <p className="text-sm text-red-500 mt-1">
-                {errors.password.message}
-              </p>
-            )}
-          </label>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-4"
+          autoComplete="off"
+        >
+          <FormInput
+            label="Email"
+            type="email"
+            name="email"
+            placeholder="Nhập email"
+            error={errors.email}
+            {...register("email", {
+              required: "Vui lòng nhập email",
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: "Email không hợp lệ",
+              },
+            })}
+          />
 
-          {/* Nhập lại mật khẩu */}
-          <label className="block">
-            <span className="text-gray-700 text-sm font-medium">
-              Nhập lại mật khẩu
-            </span>
-            <div className="relative">
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                {...register("confirmPassword", {
-                  required: "Vui lòng nhập lại mật khẩu",
-                  validate: (value) =>
-                    value === password || "Mật khẩu nhập lại không khớp",
-                })}
-                className="mt-1 block w-full rounded-lg border border-gray-300 p-2 pr-10 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                placeholder="Xác nhận mật khẩu"
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-gray-700"
-              >
-                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
-            </div>
-            {errors.confirmPassword && (
-              <p className="text-sm text-red-500 mt-1">
-                {errors.confirmPassword.message}
-              </p>
-            )}
-          </label>
-
-          {/* Checkbox điều khoản */}
-          <label className="flex items-center gap-2 text-sm text-gray-600">
-            <input
-              type="checkbox"
-              {...register("terms", { required: "Bạn phải đồng ý điều khoản" })}
-              className="h-4 w-4 rounded border-gray-300 focus:ring-blue-500"
-            />
-            Tôi đồng ý với
-            <a href="#" className="text-blue-600 hover:underline">
-              Điều khoản & Chính sách
-            </a>
-          </label>
-          {errors.terms && (
-            <p className="text-sm text-red-500 mt-1">{errors.terms.message}</p>
-          )}
-
-          {/* Server error */}
-          {serverError && (
-            <p className="text-sm text-red-500 text-center">{serverError}</p>
-          )}
-
-          {/* Nút đăng ký */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50"
+          <FormInput
+            label="Mật khẩu"
+            type={showPassword ? "text" : "password"}
+            name="password"
+            placeholder="Nhập mật khẩu"
+            error={errors.password}
+            {...register("password", {
+              required: "Vui lòng nhập mật khẩu",
+              minLength: {
+                value: 8,
+                message: "Mật khẩu phải có ít nhất 8 ký tự",
+              },
+              pattern: {
+                value: /^(?=.*[0-9])(?=.*[!@#$%^&*])/,
+                message: "Mật khẩu phải chứa ít nhất 1 số và 1 ký tự đặc biệt",
+              },
+            })}
           >
-            {loading ? "Đang xử lý..." : "Đăng ký"}
-          </button>
+            <button
+              type="button"
+              onClick={() => toggleShow("password")}
+              className="absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-gray-700"
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </FormInput>
 
-          {/* Link đăng nhập */}
+          <FormInput
+            label="Nhập lại mật khẩu"
+            type={showConfirmPassword ? "text" : "password"}
+            name="confirmPassword"
+            placeholder="Xác nhận mật khẩu"
+            error={errors.confirmPassword}
+            {...register("confirmPassword", {
+              required: "Vui lòng nhập lại mật khẩu",
+              validate: (value) =>
+                value === password || "Mật khẩu nhập lại không khớp",
+            })}
+          >
+            <button
+              type="button"
+              onClick={() => toggleShow("confirm")}
+              className="absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-gray-700"
+            >
+              {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </FormInput>
+
+          <Checkbox
+            label={
+              <>
+                Tôi đồng ý với{" "}
+                <a href="#" className="text-blue-600 hover:underline">
+                  Điều khoản & Chính sách
+                </a>
+              </>
+            }
+            error={errors.terms}
+            {...register("terms", { required: "Bạn phải đồng ý điều khoản" })}
+          />
+
+          {error && <p className="text-sm text-red-500 text-center">{error}</p>}
+
+          <ButtonLoading loading={loading}>Đăng ký</ButtonLoading>
+
           <p className="text-center text-sm text-gray-600">
             Đã có tài khoản?
-            <Link to="/login" className="text-blue-600 hover:underline">
+            <Link to="/login" className="text-blue-600 hover:underline ml-1">
               Đăng nhập
             </Link>
           </p>
         </form>
       </div>
 
-      {/* Toast container */}
-      <ToastContainer />
+      <Toast />
     </div>
   );
 };

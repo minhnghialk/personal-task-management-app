@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { RegisterPage } from "./auth/RegisterPage";
 import { LoginPage } from "./auth/LoginPage";
 
-export const App = () => {
+const App = () => {
   return (
     <>
       <BrowserRouter>
@@ -18,3 +18,5 @@ export const App = () => {
     </>
   );
 };
+
+export default App;
