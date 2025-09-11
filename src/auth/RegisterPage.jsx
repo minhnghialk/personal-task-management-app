@@ -10,6 +10,11 @@ import { Checkbox } from "../components/Checkbox";
 import { ButtonLoading } from "../components/ButtonLoading";
 import { Toast } from "../components/Toast";
 import { registerUser } from "../auth/authSlice";
+import {
+  emailValidation,
+  passwordValidation,
+  termsValidation,
+} from "../utils/validation";
 
 export const RegisterPage = () => {
   const {
@@ -57,13 +62,7 @@ export const RegisterPage = () => {
             name="email"
             placeholder="Nhập email"
             error={errors.email}
-            {...register("email", {
-              required: "Vui lòng nhập email",
-              pattern: {
-                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                message: "Email không hợp lệ",
-              },
-            })}
+            {...register("email", emailValidation)}
           />
 
           <FormInput
@@ -72,17 +71,7 @@ export const RegisterPage = () => {
             name="password"
             placeholder="Nhập mật khẩu"
             error={errors.password}
-            {...register("password", {
-              required: "Vui lòng nhập mật khẩu",
-              minLength: {
-                value: 8,
-                message: "Mật khẩu phải có ít nhất 8 ký tự",
-              },
-              pattern: {
-                value: /^(?=.*[0-9])(?=.*[!@#$%^&*])/,
-                message: "Mật khẩu phải chứa ít nhất 1 số và 1 ký tự đặc biệt",
-              },
-            })}
+            {...register("password", passwordValidation)}
           >
             <button
               type="button"
@@ -124,7 +113,7 @@ export const RegisterPage = () => {
               </>
             }
             error={errors.terms}
-            {...register("terms", { required: "Bạn phải đồng ý điều khoản" })}
+            {...register("terms", termsValidation)}
           />
 
           {error && <p className="text-sm text-red-500 text-center">{error}</p>}
