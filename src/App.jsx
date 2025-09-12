@@ -1,9 +1,22 @@
 import "./styles/tailwind.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { RegisterPage } from "./auth/RegisterPage";
+import { LoginPage } from "./auth/LoginPage";
 
-export const App = () => {
+const App = () => {
   return (
     <>
-      <h1 class="text-3xl font-bold underline">Personal Task Management App</h1>
+      <BrowserRouter>
+        <Routes>
+          {/* Đăng ký */}
+          <Route path="/register" element={<RegisterPage />} />
+
+          {/* Đăng nhập */}
+          <Route path="/login" element={<LoginPage />} />
+        </Routes>
+      </BrowserRouter>
     </>
   );
 };
+
+export default App;
