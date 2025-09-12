@@ -15,6 +15,7 @@ import {
   passwordValidation,
   termsValidation,
 } from "../utils/validation";
+import { TogglePasswordButton } from "../components/TogglePasswordButton";
 
 export const RegisterPage = () => {
   const {
@@ -29,11 +30,6 @@ export const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const password = watch("password");
-
-  const toggleShow = (type) => {
-    if (type === "password") setShowPassword((prev) => !prev);
-    else setShowConfirmPassword((prev) => !prev);
-  };
 
   const onSubmit = (data) => {
     dispatch(registerUser({ email: data.email, password: data.password }))
@@ -73,13 +69,10 @@ export const RegisterPage = () => {
             error={errors.password}
             {...register("password", passwordValidation)}
           >
-            <button
-              type="button"
-              onClick={() => toggleShow("password")}
-              className="absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-gray-700"
-            >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
+            <TogglePasswordButton
+              visible={showPassword}
+              setVisible={setShowPassword}
+            />
           </FormInput>
 
           <FormInput
@@ -94,13 +87,10 @@ export const RegisterPage = () => {
                 value === password || "Mật khẩu nhập lại không khớp",
             })}
           >
-            <button
-              type="button"
-              onClick={() => toggleShow("confirm")}
-              className="absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-gray-700"
-            >
-              {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
+            <TogglePasswordButton
+              visible={showConfirmPassword}
+              setVisible={setShowConfirmPassword}
+            />
           </FormInput>
 
           <Checkbox
