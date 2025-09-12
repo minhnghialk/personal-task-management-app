@@ -78,7 +78,7 @@ export const RegisterPage = () => {
       },
       toggle: toggleConfirmPassword,
       show: showConfirmPassword,
-      ariaLabel: showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu",
+      ariaLabel: showConfirmPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu",
     },
   ];
 
