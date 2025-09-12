@@ -1,8 +1,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { FormInput } from "../components/FormInput";
@@ -16,6 +15,7 @@ import {
   termsValidation,
 } from "../utils/validation";
 import { TogglePasswordButton } from "../components/TogglePasswordButton";
+import { useNotifyAndNavigate } from "../hooks/useNotifyAndNavigate";
 
 export const RegisterPage = () => {
   const {
@@ -24,7 +24,7 @@ export const RegisterPage = () => {
     watch,
     formState: { errors },
   } = useForm();
-  const navigate = useNavigate();
+  const notify = useNotifyAndNavigate();
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.auth);
   const [showPassword, setShowPassword] = useState(false);
@@ -34,10 +34,9 @@ export const RegisterPage = () => {
   const onSubmit = (data) => {
     dispatch(registerUser({ email: data.email, password: data.password }))
       .unwrap()
-      .then(() => {
-        toast.success("Đăng ký thành công! Vui lòng kiểm tra email.");
-        setTimeout(() => navigate("/login"), 4000);
-      })
+      .then(() =>
+        notify("Đăng ký thành công! Vui lòng kiểm tra email.", "/login")
+      )
       .catch((err) => toast.error(err || "Có lỗi xảy ra. Vui lòng thử lại!"));
   };
 
