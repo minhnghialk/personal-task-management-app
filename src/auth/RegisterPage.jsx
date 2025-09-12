@@ -1,6 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -29,6 +29,14 @@ export const RegisterPage = () => {
   const { loading, error } = useSelector((state) => state.auth);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const togglePassword = useCallback(
+    () => setShowPassword((prev) => !prev),
+    []
+  );
+  const toggleConfirmPassword = useCallback(
+    () => setShowConfirmPassword((prev) => !prev),
+    []
+  );
   const password = watch("password");
 
   const onSubmit = (data) => {
@@ -39,6 +47,38 @@ export const RegisterPage = () => {
       )
       .catch((err) => toast.error(err || "Có lỗi xảy ra. Vui lòng thử lại!"));
   };
+
+  const fields = [
+    {
+      name: "email",
+      label: "Email",
+      placeholder: "Nhập email",
+      type: "text",
+      validation: emailValidation,
+    },
+    {
+      name: "password",
+      label: "Mật khẩu",
+      placeholder: "Nhập mật khẩu",
+      type: showPassword ? "text" : "password",
+      validation: passwordValidation,
+      toggle: togglePassword,
+      show: showPassword,
+    },
+    {
+      name: "confirmPassword",
+      label: "Nhập lại mật khẩu",
+      placeholder: "Xác nhận mật khẩu",
+      type: showConfirmPassword ? "text" : "password",
+      validation: {
+        required: "Vui lòng nhập lại mật khẩu",
+        validate: (value) =>
+          value === password || "Mật khẩu nhập lại không khớp",
+      },
+      toggle: toggleConfirmPassword,
+      show: showConfirmPassword,
+    },
+  ];
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
@@ -52,45 +92,23 @@ export const RegisterPage = () => {
           className="space-y-4"
           autoComplete="off"
         >
-          <FormInput
-            label="Email"
-            name="email"
-            placeholder="Nhập email"
-            error={errors.email}
-            {...register("email", emailValidation)}
-          />
-
-          <FormInput
-            label="Mật khẩu"
-            type={showPassword ? "text" : "password"}
-            name="password"
-            placeholder="Nhập mật khẩu"
-            error={errors.password}
-            {...register("password", passwordValidation)}
-          >
-            <TogglePasswordButton
-              visible={showPassword}
-              setVisible={setShowPassword}
-            />
-          </FormInput>
-
-          <FormInput
-            label="Nhập lại mật khẩu"
-            type={showConfirmPassword ? "text" : "password"}
-            name="confirmPassword"
-            placeholder="Xác nhận mật khẩu"
-            error={errors.confirmPassword}
-            {...register("confirmPassword", {
-              required: "Vui lòng nhập lại mật khẩu",
-              validate: (value) =>
-                value === password || "Mật khẩu nhập lại không khớp",
-            })}
-          >
-            <TogglePasswordButton
-              visible={showConfirmPassword}
-              setVisible={setShowConfirmPassword}
-            />
-          </FormInput>
+          {fields.map((field) => (
+            <FormInput
+              key={field.name}
+              label={field.label}
+              type={field.type}
+              placeholder={field.placeholder}
+              error={errors[field.name]}
+              {...register(field.name, field.validation)}
+            >
+              {field.toggle && (
+                <TogglePasswordButton
+                  visible={field.show}
+                  setVisible={field.toggle}
+                />
+              )}
+            </FormInput>
+          ))}
 
           <Checkbox
             label={
