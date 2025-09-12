@@ -64,6 +64,7 @@ export const RegisterPage = () => {
       validation: passwordValidation,
       toggle: togglePassword,
       show: showPassword,
+      ariaLabel: showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu",
     },
     {
       name: "confirmPassword",
@@ -77,6 +78,7 @@ export const RegisterPage = () => {
       },
       toggle: toggleConfirmPassword,
       show: showConfirmPassword,
+      ariaLabel: showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu",
     },
   ];
 
@@ -105,6 +107,7 @@ export const RegisterPage = () => {
                 <TogglePasswordButton
                   visible={field.show}
                   setVisible={field.toggle}
+                  ariaLabel={field.ariaLabel}
                 />
               )}
             </FormInput>
