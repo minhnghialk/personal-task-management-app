@@ -9,13 +9,10 @@ import { Checkbox } from "../components/Checkbox";
 import { ButtonLoading } from "../components/ButtonLoading";
 import { Toast } from "../components/Toast";
 import { registerUser } from "../auth/authSlice";
-import {
-  emailValidation,
-  passwordValidation,
-  termsValidation,
-} from "../utils/validation";
+import { termsValidation } from "../utils/validation";
 import { TogglePasswordButton } from "../components/TogglePasswordButton";
 import { useNotifyAndNavigate } from "../hooks/useNotifyAndNavigate";
+import { getRegisterFields } from "../utils/formFields";
 
 export const RegisterPage = () => {
   const {
@@ -27,8 +24,10 @@ export const RegisterPage = () => {
   const notify = useNotifyAndNavigate();
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.auth);
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const togglePassword = useCallback(
     () => setShowPassword((prev) => !prev),
     []
@@ -48,39 +47,13 @@ export const RegisterPage = () => {
       .catch((err) => toast.error(err || "Có lỗi xảy ra. Vui lòng thử lại!"));
   };
 
-  const fields = [
-    {
-      name: "email",
-      label: "Email",
-      placeholder: "Nhập email",
-      type: "text",
-      validation: emailValidation,
-    },
-    {
-      name: "password",
-      label: "Mật khẩu",
-      placeholder: "Nhập mật khẩu",
-      type: "password",
-      validation: passwordValidation,
-      toggle: togglePassword,
-      show: showPassword,
-      ariaLabel: showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu",
-    },
-    {
-      name: "confirmPassword",
-      label: "Nhập lại mật khẩu",
-      placeholder: "Xác nhận mật khẩu",
-      type: "password",
-      validation: {
-        required: "Vui lòng nhập lại mật khẩu",
-        validate: (value) =>
-          value === password || "Mật khẩu nhập lại không khớp",
-      },
-      toggle: toggleConfirmPassword,
-      show: showConfirmPassword,
-      ariaLabel: showConfirmPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu",
-    },
-  ];
+  const fields = getRegisterFields(
+    password,
+    showPassword,
+    togglePassword,
+    showConfirmPassword,
+    toggleConfirmPassword
+  );
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
@@ -98,7 +71,7 @@ export const RegisterPage = () => {
             <FormInput
               key={field.name}
               label={field.label}
-              type={field.show ? "text" : field.type}
+              type={field.type}
               placeholder={field.placeholder}
               error={errors[field.name]}
               {...register(field.name, field.validation)}
