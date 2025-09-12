@@ -60,7 +60,7 @@ export const RegisterPage = () => {
       name: "password",
       label: "Mật khẩu",
       placeholder: "Nhập mật khẩu",
-      type: showPassword ? "text" : "password",
+      type: "password",
       validation: passwordValidation,
       toggle: togglePassword,
       show: showPassword,
@@ -70,7 +70,7 @@ export const RegisterPage = () => {
       name: "confirmPassword",
       label: "Nhập lại mật khẩu",
       placeholder: "Xác nhận mật khẩu",
-      type: showConfirmPassword ? "text" : "password",
+      type: "password",
       validation: {
         required: "Vui lòng nhập lại mật khẩu",
         validate: (value) =>
@@ -98,7 +98,7 @@ export const RegisterPage = () => {
             <FormInput
               key={field.name}
               label={field.label}
-              type={field.type}
+              type={field.show ? "text" : field.type}
               placeholder={field.placeholder}
               error={errors[field.name]}
               {...register(field.name, field.validation)}
