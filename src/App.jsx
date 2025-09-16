@@ -4,6 +4,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { RegisterPage } from "./auth/RegisterPage";
 import { LoginPage } from "./auth/LoginPage";
 import { DashboardPage } from "./pages/Dashboard";
+import { ForgotPasswordPage } from "./auth/ForgotPasswordPage";
+import { ResetPasswordPage } from "./auth/ResetPasswordPage";
 
 const App = () => {
   return (
@@ -15,6 +17,12 @@ const App = () => {
 
           {/* Đăng nhập */}
           <Route path="/login" element={<LoginPage />} />
+
+          {/* Quên mật khẩu */}
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
+          {/* Đặt lại mật khẩu */}
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
 
           {/* Dashboard */}
           <Route path="/dashboard" element={<DashboardPage />} />
