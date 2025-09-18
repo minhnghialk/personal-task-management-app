@@ -1,4 +1,3 @@
-// src/components/SuccessPopup.jsx
 import React from "react";
 
 export const SuccessPopup = ({ open, onClose, message, subMessage }) => {
