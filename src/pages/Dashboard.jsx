@@ -3,8 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { supabase } from "../api/supabaseClient";
 import { loginUser, logout } from "../auth/authSlice";
 import { LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export const DashboardPage = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
 
@@ -27,6 +29,7 @@ export const DashboardPage = () => {
 
   const handleLogout = () => {
     dispatch(logout());
+    navigate("/login");
   };
 
   return (

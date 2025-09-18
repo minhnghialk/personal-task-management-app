@@ -6,6 +6,7 @@ import { LoginPage } from "./auth/LoginPage";
 import { DashboardPage } from "./pages/Dashboard";
 import { ForgotPasswordPage } from "./auth/ForgotPasswordPage";
 import { ResetPasswordPage } from "./auth/ResetPasswordPage";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 const App = () => {
   return (
@@ -25,7 +26,14 @@ const App = () => {
           <Route path="/reset-password" element={<ResetPasswordPage />} />
 
           {/* Dashboard */}
-          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </>
