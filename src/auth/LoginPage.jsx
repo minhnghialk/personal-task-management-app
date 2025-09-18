@@ -2,7 +2,6 @@ import React, { useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
 import { FormInput } from "../components/FormInput";
 import { Checkbox } from "../components/Checkbox";
 import { ButtonLoading } from "../components/ButtonLoading";
@@ -20,7 +19,7 @@ export const LoginPage = () => {
   } = useForm();
   const dispatch = useDispatch();
   const notify = useNotifyAndNavigate();
-  const { loading } = useSelector((state) => state.auth);
+  const { loading, error } = useSelector((state) => state.auth);
 
   const [showPassword, setShowPassword] = useState(false);
   const togglePassword = useCallback(
@@ -38,7 +37,7 @@ export const LoginPage = () => {
     )
       .unwrap()
       .then(() => notify("Đăng nhập thành công!", "/dashboard"))
-      .catch(() => toast.error("Email hoặc mật khẩu không đúng."));
+      .catch(() => console.error("Login failed"));
   };
 
   const fields = getLoginFields(showPassword, togglePassword);
@@ -89,6 +88,14 @@ export const LoginPage = () => {
               Quên mật khẩu?
             </Link>
           </div>
+
+          {error && (
+            <p className="text-sm text-red-500 text-center">
+              {error === "Invalid login credentials"
+                ? "Email hoặc mật khẩu không đúng"
+                : error}
+            </p>
+          )}
 
           <ButtonLoading loading={loading}>Đăng nhập</ButtonLoading>
 

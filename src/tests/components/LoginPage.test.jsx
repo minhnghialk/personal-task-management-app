@@ -44,7 +44,7 @@ const renderWithProviders = (ui, preloadedState) => {
 
 describe("LoginPage Component - Full Coverage Tests", () => {
   beforeEach(() => {
-    localStorage.clear(); // Reset localStorage trước mỗi test
+    localStorage.clear();
   });
 
   test("render đúng các input, button và checkbox", () => {
@@ -131,7 +131,6 @@ describe("LoginPage Component - Full Coverage Tests", () => {
     const passwordInput = screen.getByPlaceholderText(/Nhập mật khẩu/i);
     const toggleBtn = screen.getByLabelText(/hiện mật khẩu|ẩn mật khẩu/i);
 
-    // ban đầu type = password
     expect(passwordInput).toHaveAttribute("type", "password");
 
     fireEvent.click(toggleBtn);

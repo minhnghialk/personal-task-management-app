@@ -49,6 +49,21 @@ const authSlice = createSlice({
       sessionStorage.removeItem("supabaseSession");
       supabase.auth.signOut();
     },
+    restoreSession: (state) => {
+      const stored =
+        localStorage.getItem("supabaseSession") ||
+        sessionStorage.getItem("supabaseSession");
+
+      if (stored) {
+        try {
+          const session = JSON.parse(stored);
+          state.user = session?.user || null;
+        } catch (e) {
+          console.error("Lỗi parse session:", e);
+          state.user = null;
+        }
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -82,5 +97,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, restoreSession } = authSlice.actions;
 export default authSlice.reducer;

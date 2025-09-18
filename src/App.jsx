@@ -7,34 +7,37 @@ import { DashboardPage } from "./pages/Dashboard";
 import { ForgotPasswordPage } from "./auth/ForgotPasswordPage";
 import { ResetPasswordPage } from "./auth/ResetPasswordPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { AppInitializer } from "./AppInitializer";
 
 const App = () => {
   return (
     <>
       <BrowserRouter>
-        <Routes>
-          {/* Đăng ký */}
-          <Route path="/register" element={<RegisterPage />} />
+        <AppInitializer>
+          <Routes>
+            {/* Đăng ký */}
+            <Route path="/register" element={<RegisterPage />} />
 
-          {/* Đăng nhập */}
-          <Route path="/login" element={<LoginPage />} />
+            {/* Đăng nhập */}
+            <Route path="/login" element={<LoginPage />} />
 
-          {/* Quên mật khẩu */}
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            {/* Quên mật khẩu */}
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
-          {/* Đặt lại mật khẩu */}
-          <Route path="/reset-password" element={<ResetPasswordPage />} />
+            {/* Đặt lại mật khẩu */}
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
 
-          {/* Dashboard */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <DashboardPage />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+            {/* Dashboard */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </AppInitializer>
       </BrowserRouter>
     </>
   );
