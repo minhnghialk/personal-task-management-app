@@ -20,7 +20,7 @@ export const LoginPage = () => {
   } = useForm();
   const dispatch = useDispatch();
   const notify = useNotifyAndNavigate();
-  const { loading, error } = useSelector((state) => state.auth);
+  const { loading } = useSelector((state) => state.auth);
 
   const [showPassword, setShowPassword] = useState(false);
   const togglePassword = useCallback(
@@ -38,7 +38,7 @@ export const LoginPage = () => {
     )
       .unwrap()
       .then(() => notify("Đăng nhập thành công!", "/dashboard"))
-      .catch((err) => toast.error(err || "Email hoặc mật khẩu không đúng."));
+      .catch(() => toast.error("Email hoặc mật khẩu không đúng."));
   };
 
   const fields = getLoginFields(showPassword, togglePassword);
@@ -89,8 +89,6 @@ export const LoginPage = () => {
               Quên mật khẩu?
             </Link>
           </div>
-
-          {error && <p className="text-sm text-red-500 text-center">{error}</p>}
 
           <ButtonLoading loading={loading}>Đăng nhập</ButtonLoading>
 
