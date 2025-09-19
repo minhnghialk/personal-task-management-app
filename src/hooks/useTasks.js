@@ -1,4 +1,3 @@
-import React from "react";
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../api/supabaseClient";
 
@@ -6,52 +5,69 @@ export const useTasks = (user) => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // Fetch tasks từ Supabase
   const fetchTasks = useCallback(async () => {
     if (!user) return;
     setLoading(true);
-    const { data, error } = await supabase
-      .from("tasks")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false });
-    if (error) console.error("Error fetching tasks:", error.message);
-    else setTasks(data || []);
-    setLoading(false);
+    try {
+      const { data, error } = await supabase
+        .from("tasks")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      const tasksWithPrev = (data || []).map((t) => ({
+        ...t,
+        prevStatus: t.status,
+      }));
+
+      setTasks(tasksWithPrev);
+    } catch (err) {
+      console.error("Error fetching tasks:", err.message);
+    } finally {
+      setLoading(false);
+    }
   }, [user]);
 
-  const toggleTaskCompletion = useCallback(async (taskId, completed) => {
+  // Toggle trạng thái hoàn thành
+  const toggleTaskCompletion = useCallback(async (taskId, checked) => {
+    let updatedTask;
+
     setTasks((prev) =>
       prev.map((t) => {
         if (t.id === taskId) {
-          if (completed) {
-            return {
-              ...t,
-              completed: true,
-              status: "done",
-              prevStatus: t.status,
-            };
-          } else {
-            return { ...t, completed: false, status: t.prevStatus || "todo" };
-          }
+          const newStatus = checked ? "done" : t.prevStatus || "todo";
+          updatedTask = { ...t, status: newStatus, prevStatus: t.status };
+          return updatedTask;
         }
         return t;
       })
     );
 
-    const { error } = await supabase
-      .from("tasks")
-      .update({
-        completed,
-        status: completed ? "done" : undefined,
-      })
-      .eq("id", taskId);
+    if (!updatedTask) return;
 
-    if (error) console.error("Error updating task:", error.message);
+    try {
+      const { error } = await supabase
+        .from("tasks")
+        .update({ status: updatedTask.status })
+        .eq("id", taskId);
+
+      if (error) throw error;
+    } catch (err) {
+      console.error("Error updating task:", err.message);
+      setTasks((prev) =>
+        prev.map((t) =>
+          t.id === taskId ? { ...t, status: updatedTask.prevStatus } : t
+        )
+      );
+    }
   }, []);
 
   useEffect(() => {
     fetchTasks();
   }, [fetchTasks]);
 
-  return { tasks, loading, setTasks, toggleTaskCompletion };
+  return { tasks, loading, setTasks, toggleTaskCompletion, fetchTasks };
 };

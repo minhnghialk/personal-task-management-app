@@ -10,10 +10,12 @@ export const TaskRowDesktop = ({ task, onToggleCompletion }) => {
         <input
           type="checkbox"
           className="w-4 h-4 accent-blue-500"
-          checked={task.completed || false}
+          checked={task.status === "done"}
           onChange={(e) => onToggleCompletion(task.id, e.target.checked)}
         />
-        <span className={task.completed ? "line-through text-gray-400" : ""}>
+        <span
+          className={task.status === "done" ? "line-through text-gray-400" : ""}
+        >
           {task.title}
         </span>
       </td>
