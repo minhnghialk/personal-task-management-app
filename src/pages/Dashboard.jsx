@@ -64,7 +64,9 @@ export const DashboardPage = () => {
         handleLogout={handleLogout}
       />
 
-      <div className="flex-1 md:ml-64 flex flex-col">
+      <div
+        className={`flex-1 flex flex-col transition-all duration-300 lg:ml-64`}
+      >
         <MainHeader
           activeMenu={activeMenu}
           user={user}

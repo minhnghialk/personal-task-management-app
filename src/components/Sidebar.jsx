@@ -16,7 +16,7 @@ export const Sidebar = ({
   <aside
     className={`fixed top-0 left-0 h-full w-64 bg-gray-900 text-white shadow-lg flex flex-col justify-between transition-transform transform
       ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} 
-      md:translate-x-0 z-40`}
+      lg:translate-x-0 z-40`}
   >
     <div>
       {/* Logo + Close button */}
@@ -25,7 +25,7 @@ export const Sidebar = ({
           <PulseDot /> TickUp
         </div>
         <button
-          className="md:hidden text-gray-400 hover:text-white"
+          className="lg:hidden text-gray-400 hover:text-white"
           onClick={() => setSidebarOpen(false)}
         >
           <X className="w-6 h-6" />

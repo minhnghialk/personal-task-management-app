@@ -3,7 +3,7 @@ import { Menu } from "lucide-react";
 export const MainHeader = ({ activeMenu, user, setSidebarOpen }) => (
   <header className="sticky top-0 z-30 flex items-center justify-between bg-white shadow px-4 py-3 md:rounded-b-2xl">
     <button
-      className="p-2 bg-gray-800 text-white rounded-md md:hidden"
+      className="p-2 bg-gray-800 text-white rounded-md lg:hidden"
       onClick={() => setSidebarOpen(true)}
     >
       <Menu className="w-6 h-6" />
