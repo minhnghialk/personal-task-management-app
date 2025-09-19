@@ -1,3 +1,5 @@
+import React from "react";
+
 export const StatsPanel = ({ stats }) => (
   <div className="bg-white rounded-2xl shadow p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
     <div>

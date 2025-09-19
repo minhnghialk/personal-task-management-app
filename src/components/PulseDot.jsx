@@ -1,3 +1,5 @@
+import React from "react";
+
 export const PulseDot = () => {
   return (
     <div className="relative w-4 h-4">

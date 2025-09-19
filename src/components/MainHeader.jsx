@@ -1,3 +1,4 @@
+import React from "react";
 import { Menu } from "lucide-react";
 
 export const MainHeader = ({ activeMenu, user, setSidebarOpen }) => (

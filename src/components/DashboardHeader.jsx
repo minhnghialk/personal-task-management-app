@@ -1,3 +1,4 @@
+import React from "react";
 import { Menu } from "lucide-react";
 
 export const DashboardHeader = ({ activeMenu, user, onToggleSidebar }) => (

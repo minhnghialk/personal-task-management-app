@@ -1,15 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../api/supabaseClient";
-import { loginUser, logout } from "../auth/authSlice";
+import { logout } from "../auth/authSlice";
 
 import { Sidebar } from "../components/Sidebar";
 import { MainHeader } from "../components/MainHeader";
-import { TaskTable } from "../components/TaskTable";
+import { TaskSection } from "../components/TaskSection";
 import { StatsCard } from "../components/StatsCard";
-import { useNavigate } from "react-router-dom";
 
-import { tasks, stats, chartData, COLORS } from "../utils/data";
+import { stats, chartData, COLORS } from "../utils/data";
+import { useTasks } from "../hooks/useTasks";
+import { useSupabaseSession } from "../hooks/useSupabaseSession";
+import { toast } from "react-toastify";
+
+const MENUS = {
+  DASHBOARD: "Dashboard",
+  TASK_LIST: "Danh sách Task",
+  STATS: "Thống kê",
+  PROFILE: "Hồ sơ cá nhân",
+};
 
 export const DashboardPage = () => {
   const navigate = useNavigate();
@@ -17,29 +27,25 @@ export const DashboardPage = () => {
   const user = useSelector((state) => state.auth.user);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeMenu, setActiveMenu] = useState("Dashboard");
+  const [activeMenu, setActiveMenu] = useState(MENUS.DASHBOARD);
 
-  // Khôi phục session
-  useEffect(() => {
-    const savedSession =
-      JSON.parse(localStorage.getItem("supabaseSession")) ||
-      JSON.parse(sessionStorage.getItem("supabaseSession"));
+  const { tasks, loading, setTasks, toggleTaskCompletion } = useTasks(user);
+  useSupabaseSession();
 
-    if (savedSession) {
-      supabase.auth.setSession(savedSession);
-      if (savedSession.user) {
-        dispatch({
-          type: loginUser.fulfilled.type,
-          payload: savedSession.user,
-        });
-      }
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      dispatch(logout());
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout error:", error.message);
+      toast.error("Không thể đăng xuất.");
     }
-  }, [dispatch]);
-
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate("/login");
   };
+
+  const showTasks = [MENUS.DASHBOARD, MENUS.TASK_LIST].includes(activeMenu);
+  const showStats =
+    activeMenu === MENUS.DASHBOARD || activeMenu === MENUS.STATS;
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -52,7 +58,7 @@ export const DashboardPage = () => {
         handleLogout={handleLogout}
       />
 
-      <div className="flex-1 md:ml-64 flex flex-col">
+      <div className="flex-1 lg:ml-64 flex flex-col">
         <MainHeader
           activeMenu={activeMenu}
           user={user}
@@ -60,23 +66,23 @@ export const DashboardPage = () => {
         />
 
         <main className="flex-1 p-4 sm:p-6 md:p-8">
-          {activeMenu === "Dashboard" && (
-            <>
-              {/* Task List Preview */}
-              <TaskTable tasks={tasks} />
-
-              {/* Stats + Pie Chart */}
-              <StatsCard stats={stats} chartData={chartData} COLORS={COLORS} />
-            </>
+          {showTasks && (
+            <TaskSection
+              tasks={tasks}
+              loading={loading}
+              user={user}
+              onTaskCreated={(newTask) =>
+                setTasks((prev) => [newTask, ...prev])
+              }
+              onToggleCompletion={toggleTaskCompletion}
+            />
           )}
 
-          {activeMenu === "Danh sách Task" && <TaskTable tasks={tasks} />}
-
-          {activeMenu === "Thống kê" && (
+          {showStats && (
             <StatsCard stats={stats} chartData={chartData} COLORS={COLORS} />
           )}
 
-          {activeMenu === "Hồ sơ cá nhân" && (
+          {activeMenu === MENUS.PROFILE && (
             <div className="bg-white rounded-2xl shadow p-6">
               <h2 className="text-xl font-bold text-gray-900 mb-4">
                 Hồ sơ cá nhân
