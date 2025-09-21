@@ -1,14 +1,10 @@
+import React from "react";
 import { useState } from "react";
 import { TaskForm } from "./TaskForm";
 import { TaskTableHeader } from "./TaskTableHeader";
 import { TaskTableMobile } from "./TaskTableMobile";
 import { TaskTableDesktop } from "./TaskTableDesktop";
-export const TaskTable = ({
-  tasks,
-  onTaskCreated,
-  user,
-  onToggleCompletion,
-}) => {
+export const TaskTable = ({ tasks, onTaskCreated, onToggleCompletion }) => {
   const [modalOpen, setModalOpen] = useState(false);
   return (
     <>
@@ -29,7 +25,6 @@ export const TaskTable = ({
       <TaskForm
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        user={user}
         onTaskCreated={onTaskCreated}
       />
     </>

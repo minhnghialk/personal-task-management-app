@@ -1,3 +1,4 @@
+import React from "react";
 import { TaskCardMobile } from "./TaskCardMobile";
 
 export const TaskTableMobile = ({ tasks, onToggleCompletion }) => (

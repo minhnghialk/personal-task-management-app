@@ -1,28 +1,33 @@
 import React from "react";
 import { Menu } from "lucide-react";
+import { useSelector } from "react-redux";
 
-export const MainHeader = ({ activeMenu, user, setSidebarOpen }) => (
-  <header className="sticky top-0 z-30 flex items-center justify-between bg-white shadow px-4 py-3 md:rounded-b-2xl">
-    <button
-      className="p-2 bg-gray-800 text-white rounded-md lg:hidden"
-      onClick={() => setSidebarOpen(true)}
-    >
-      <Menu className="w-6 h-6" />
-    </button>
+export const MainHeader = ({ activeMenu, setSidebarOpen }) => {
+  const user = useSelector((state) => state.auth.user);
 
-    <h1 className="text-lg sm:text-2xl font-bold text-gray-900">
-      {activeMenu}
-    </h1>
+  return (
+    <header className="sticky top-0 z-30 flex items-center justify-between bg-white shadow px-4 py-3 md:rounded-b-2xl">
+      <button
+        className="p-2 bg-gray-800 text-white rounded-md lg:hidden"
+        onClick={() => setSidebarOpen(true)}
+      >
+        <Menu className="w-6 h-6" />
+      </button>
 
-    {user && (
-      <div className="flex items-center gap-2 sm:gap-4">
-        <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-700 font-bold">
-          {user.email[0].toUpperCase()}
+      <h1 className="text-lg sm:text-2xl font-bold text-gray-900">
+        {activeMenu}
+      </h1>
+
+      {user && (
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-700 font-bold">
+            {user.email[0].toUpperCase()}
+          </div>
+          <span className="hidden sm:inline text-gray-900 font-medium">
+            {user.email}
+          </span>
         </div>
-        <span className="hidden sm:inline text-gray-900 font-medium">
-          {user.email}
-        </span>
-      </div>
-    )}
-  </header>
-);
+      )}
+    </header>
+  );
+};

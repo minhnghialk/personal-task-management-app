@@ -5,7 +5,6 @@ import { LoadingDots } from "./LoadingDots";
 export const TaskSection = ({
   tasks,
   loading,
-  user,
   onTaskCreated,
   onToggleCompletion,
 }) => {
@@ -13,7 +12,6 @@ export const TaskSection = ({
   return (
     <TaskTable
       tasks={tasks}
-      user={user}
       onTaskCreated={onTaskCreated}
       onToggleCompletion={onToggleCompletion}
     />

@@ -1,3 +1,5 @@
+import React from "react";
+
 export const TaskStatusBadge = ({ status }) => {
   const styles =
     status === "todo"

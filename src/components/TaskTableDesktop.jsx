@@ -1,3 +1,4 @@
+import React from "react";
 import { TaskRowDesktop } from "./TaskRowDesktop";
 
 export const TaskTableDesktop = ({ tasks, onToggleCompletion }) => (

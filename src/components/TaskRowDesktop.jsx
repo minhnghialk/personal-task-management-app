@@ -1,3 +1,4 @@
+import React from "react";
 import { formatDate } from "../utils/date";
 import { TaskPriorityBadge } from "./TaskPriorityBadge";
 import { TaskStatusBadge } from "./TaskStatusBadge";
@@ -12,6 +13,8 @@ export const TaskRowDesktop = ({ task, onToggleCompletion }) => {
           className="w-4 h-4 accent-blue-500"
           checked={task.status === "done"}
           onChange={(e) => onToggleCompletion(task.id, e.target.checked)}
+          aria-label={task.title}
+          data-testid={`desktop-checkbox-${task.id}`}
         />
         <span
           className={task.status === "done" ? "line-through text-gray-400" : ""}

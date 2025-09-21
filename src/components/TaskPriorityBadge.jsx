@@ -1,3 +1,5 @@
+import React from "react";
+
 export const TaskPriorityBadge = ({ priority }) => {
   const styles =
     priority === "high"

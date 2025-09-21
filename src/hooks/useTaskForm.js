@@ -1,8 +1,10 @@
 import React from "react";
 import { useState } from "react";
 import { supabase } from "../api/supabaseClient";
+import { useSelector } from "react-redux";
 
-export const useTaskForm = ({ user, onTaskCreated, onClose }) => {
+export const useTaskForm = ({ onTaskCreated, onClose }) => {
+  const user = useSelector((state) => state.auth.user);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [deadline, setDeadline] = useState("");

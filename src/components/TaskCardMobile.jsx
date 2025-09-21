@@ -1,3 +1,4 @@
+import React from "react";
 import { formatDate } from "../utils/date";
 import { TaskPriorityBadge } from "./TaskPriorityBadge";
 import { TaskStatusBadge } from "./TaskStatusBadge";
@@ -13,6 +14,8 @@ export const TaskCardMobile = ({ task, onToggleCompletion }) => {
           className="w-5 h-5 accent-blue-500"
           checked={task.status === "done"}
           onChange={(e) => onToggleCompletion(task.id, e.target.checked)}
+          aria-label={task.title}
+          data-testid={`mobile-checkbox-${task.id}`}
         />
         <span
           className={`font-semibold text-gray-900 text-lg ${
