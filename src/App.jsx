@@ -9,25 +9,19 @@ import { ResetPasswordPage } from "./auth/ResetPasswordPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AppInitializer } from "./AppInitializer";
 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const App = () => {
   return (
     <>
       <BrowserRouter>
         <AppInitializer>
           <Routes>
-            {/* Đăng ký */}
             <Route path="/register" element={<RegisterPage />} />
-
-            {/* Đăng nhập */}
             <Route path="/login" element={<LoginPage />} />
-
-            {/* Quên mật khẩu */}
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-
-            {/* Đặt lại mật khẩu */}
             <Route path="/reset-password" element={<ResetPasswordPage />} />
-
-            {/* Dashboard */}
             <Route
               path="/dashboard"
               element={
@@ -39,6 +33,18 @@ const App = () => {
           </Routes>
         </AppInitializer>
       </BrowserRouter>
+
+      {/* Toast container */}
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </>
   );
 };

@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { supabase } from "../api/supabaseClient";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 export const useTaskForm = ({ onTaskCreated, onClose }) => {
   const user = useSelector((state) => state.auth.user);
@@ -82,10 +83,11 @@ export const useTaskForm = ({ onTaskCreated, onClose }) => {
 
       resetForm();
       if (onTaskCreated) onTaskCreated(taskData);
+      toast.success("Tạo task thành công!");
       onClose();
     } catch (err) {
       console.error("Error creating task:", err.message);
-      alert("Tạo task thất bại: " + err.message);
+      toast.error("Tạo task thất bại. Vui lòng thử lại!");
     } finally {
       setLoading(false);
     }
