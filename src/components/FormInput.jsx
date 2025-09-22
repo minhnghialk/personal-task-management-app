@@ -22,7 +22,9 @@ export const FormInput = React.forwardRef(
   ) => {
     return (
       <label className="block">
-        <span className="text-gray-700 text-sm font-medium">{label}</span>
+        {label && (
+          <span className="text-gray-700 text-sm font-medium">{label}</span>
+        )}
         <div className="relative">
           <input
             type={type}
@@ -31,7 +33,7 @@ export const FormInput = React.forwardRef(
             ref={ref}
             autoComplete={typeToAutocomplete[type] || "off"}
             {...props}
-            className={`mt-1 block w-full rounded-lg border border-gray-300 p-2 pr-10 focus:ring-2 focus:ring-blue-500 focus:outline-none ${
+            className={`mt-1 block w-full rounded-lg border border-gray-300 p-2 pl-10 pr-3 focus:ring-2 focus:ring-blue-500 focus:outline-none ${
               className || ""
             }`}
           />
