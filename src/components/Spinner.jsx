@@ -11,6 +11,7 @@ export const Spinner = ({ size = "10" }) => {
 
   return (
     <div
+      data-testid="spinner"
       className={`animate-spin rounded-full border-2 border-t-blue-500 border-gray-200 ${sizeClass}`}
     ></div>
   );
