@@ -9,7 +9,11 @@ export const TogglePasswordButton = ({ visible, setVisible, ariaLabel }) => {
       className="absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-gray-700"
       aria-label={ariaLabel}
     >
-      {visible ? <EyeOff size={20} /> : <Eye size={20} />}
+      {visible ? (
+        <EyeOff data-testid="lucide-eye-off" size={20} />
+      ) : (
+        <Eye data-testid="lucide-eye" size={20} />
+      )}
     </button>
   );
 };
