@@ -31,6 +31,7 @@ export const Sidebar = ({
           <button
             className="lg:hidden text-gray-400 hover:text-white"
             onClick={() => setSidebarOpen(false)}
+            aria-label="Close sidebar"
           >
             <X className="w-6 h-6" />
           </button>
