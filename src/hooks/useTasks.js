@@ -33,34 +33,30 @@ export const useTasks = (user) => {
 
   // Toggle trạng thái hoàn thành
   const toggleTaskCompletion = useCallback(async (taskId, checked) => {
-    let updatedTask;
+    let prevStatus = null;
+    let newStatus = checked ? "done" : "todo";
 
     setTasks((prev) =>
       prev.map((t) => {
         if (t.id === taskId) {
-          const newStatus = checked ? "done" : t.prevStatus || "todo";
-          updatedTask = { ...t, status: newStatus, prevStatus: t.status };
-          return updatedTask;
+          prevStatus = t.status;
+          return { ...t, status: newStatus, prevStatus: t.status };
         }
         return t;
       })
     );
 
-    if (!updatedTask) return;
-
     try {
       const { error } = await supabase
         .from("tasks")
-        .update({ status: updatedTask.status })
+        .update({ status: newStatus })
         .eq("id", taskId);
 
       if (error) throw error;
     } catch (err) {
       console.error("Error updating task:", err.message);
       setTasks((prev) =>
-        prev.map((t) =>
-          t.id === taskId ? { ...t, status: updatedTask.prevStatus } : t
-        )
+        prev.map((t) => (t.id === taskId ? { ...t, status: prevStatus } : t))
       );
     }
   }, []);
