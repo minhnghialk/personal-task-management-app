@@ -17,8 +17,8 @@ export const chartData = [
 export const COLORS = ["#22c55e", "#3b82f6", "#ef4444"];
 
 export const menuItems = [
-  { name: "Dashboard", iconName: "Home" },
-  { name: "Danh sách Task", iconName: "List" },
-  { name: "Thống kê", iconName: "BarChart2" },
-  { name: "Hồ sơ cá nhân", iconName: "User" },
+  { name: "Dashboard", iconName: "Home", path: "/dashboard" },
+  { name: "Danh sách Task", iconName: "List", path: "/dashboard/tasks" },
+  { name: "Thống kê", iconName: "BarChart2", path: "/dashboard/stats" },
+  { name: "Hồ sơ cá nhân", iconName: "User", path: "/dashboard/profile" },
 ];

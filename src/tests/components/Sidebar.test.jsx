@@ -4,25 +4,27 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { Sidebar } from "../../components/Sidebar";
 import authReducer from "../../auth/authSlice";
+import { BrowserRouter as Router } from "react-router-dom";
 
 // ------------------ Mock Supabase ------------------
 jest.mock("../../api/supabaseClient", () => ({
-  supabase: {
-    auth: { signOut: jest.fn() },
-  },
+  supabase: { auth: { signOut: jest.fn() } },
 }));
 
-// ------------------ Helper render với Redux ------------------
+// ------------------ Helper render với Redux + Router ------------------
 const renderWithStore = (ui, { preloadedState } = {}) => {
   const store = configureStore({
     reducer: { auth: authReducer },
     preloadedState,
   });
-  return render(<Provider store={store}>{ui}</Provider>);
+  return render(
+    <Provider store={store}>
+      <Router>{ui}</Router>
+    </Provider>
+  );
 };
 
 describe("Sidebar component", () => {
-  let setActiveMenu;
   let setSidebarOpen;
   let handleLogout;
 
@@ -31,7 +33,6 @@ describe("Sidebar component", () => {
   };
 
   beforeEach(() => {
-    setActiveMenu = jest.fn();
     setSidebarOpen = jest.fn();
     handleLogout = jest.fn();
   });
@@ -41,35 +42,30 @@ describe("Sidebar component", () => {
       <Sidebar
         sidebarOpen={true}
         setSidebarOpen={setSidebarOpen}
-        setActiveMenu={setActiveMenu}
         handleLogout={handleLogout}
       />,
       { preloadedState }
     );
 
-    // Kiểm tra menu items
     expect(screen.getByText("Dashboard")).toBeInTheDocument();
     expect(screen.getByText("Danh sách Task")).toBeInTheDocument();
     expect(screen.getByText("Thống kê")).toBeInTheDocument();
     expect(screen.getByText("Hồ sơ cá nhân")).toBeInTheDocument();
-    // Kiểm tra nút Logout
     expect(screen.getByText("Đăng xuất")).toBeInTheDocument();
   });
 
-  test("click menu item calls setActiveMenu and closes sidebar", () => {
+  test("click menu item closes sidebar", () => {
     renderWithStore(
       <Sidebar
         sidebarOpen={true}
         setSidebarOpen={setSidebarOpen}
-        setActiveMenu={setActiveMenu}
         handleLogout={handleLogout}
       />,
       { preloadedState }
     );
 
-    const listButton = screen.getByText("Danh sách Task");
-    fireEvent.click(listButton);
-    expect(setActiveMenu).toHaveBeenCalledWith("Danh sách Task");
+    const menuButton = screen.getByText("Danh sách Task");
+    fireEvent.click(menuButton);
     expect(setSidebarOpen).toHaveBeenCalledWith(false);
   });
 
@@ -78,7 +74,6 @@ describe("Sidebar component", () => {
       <Sidebar
         sidebarOpen={true}
         setSidebarOpen={setSidebarOpen}
-        setActiveMenu={setActiveMenu}
         handleLogout={handleLogout}
       />,
       { preloadedState }
@@ -94,7 +89,6 @@ describe("Sidebar component", () => {
       <Sidebar
         sidebarOpen={true}
         setSidebarOpen={setSidebarOpen}
-        setActiveMenu={setActiveMenu}
         handleLogout={handleLogout}
       />,
       { preloadedState }
@@ -105,35 +99,32 @@ describe("Sidebar component", () => {
     expect(handleLogout).toHaveBeenCalled();
   });
 
-  // ------------------ Responsive / Mobile view ------------------
-  test("sidebar is open by default (translate-x-0)", () => {
+  test("sidebar has correct transform class when open", () => {
     renderWithStore(
       <Sidebar
         sidebarOpen={true}
         setSidebarOpen={setSidebarOpen}
-        setActiveMenu={setActiveMenu}
         handleLogout={handleLogout}
       />,
       { preloadedState }
     );
 
-    const sidebar = screen.getByTestId("sidebar");
+    const sidebar = screen.getByRole("complementary");
     expect(sidebar).toHaveClass("translate-x-0");
     expect(sidebar).not.toHaveClass("-translate-x-full");
   });
 
-  test("sidebar is closed on mobile (translate-x-full) when sidebarOpen=false", () => {
+  test("sidebar has correct transform class when closed", () => {
     renderWithStore(
       <Sidebar
         sidebarOpen={false}
         setSidebarOpen={setSidebarOpen}
-        setActiveMenu={setActiveMenu}
         handleLogout={handleLogout}
       />,
       { preloadedState }
     );
 
-    const sidebar = screen.getByTestId("sidebar");
+    const sidebar = screen.getByRole("complementary");
     expect(sidebar).toHaveClass("-translate-x-full");
     expect(sidebar).not.toHaveClass("translate-x-0");
   });
