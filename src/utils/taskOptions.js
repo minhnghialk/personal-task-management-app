@@ -1,11 +1,23 @@
+export const TaskStatus = {
+  TODO: "todo",
+  IN_PROGRESS: "in_progress",
+  DONE: "done",
+};
+
+export const TaskPriority = {
+  HIGH: "high",
+  MEDIUM: "medium",
+  LOW: "low",
+};
+
 export const statusOptions = [
-  { value: "todo", label: "Chưa làm" },
-  { value: "in_progress", label: "Đang làm" },
-  { value: "done", label: "Hoàn thành" },
+  { value: TaskStatus.TODO, label: "Chưa làm" },
+  { value: TaskStatus.IN_PROGRESS, label: "Đang làm" },
+  { value: TaskStatus.DONE, label: "Hoàn thành" },
 ];
 
 export const priorityOptions = [
-  { value: "high", label: "Cao" },
-  { value: "medium", label: "Trung bình" },
-  { value: "low", label: "Thấp" },
+  { value: TaskPriority.HIGH, label: "Cao" },
+  { value: TaskPriority.MEDIUM, label: "Trung bình" },
+  { value: TaskPriority.LOW, label: "Thấp" },
 ];
