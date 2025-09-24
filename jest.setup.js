@@ -5,16 +5,14 @@ import { TextEncoder, TextDecoder } from "util";
 globalThis.TextEncoder = TextEncoder;
 globalThis.TextDecoder = TextDecoder;
 
-// Mock CSS/SCSS
-jest.mock("*.css", () => ({}));
-jest.mock("*.scss", () => ({}));
+// Mock react-router-dom với navigate có thể assert
+export const navigate = jest.fn();
 
-// Mock react-router-dom
 jest.mock("react-router-dom", () => {
   const actual = jest.requireActual("react-router-dom");
   return {
     ...actual,
-    useNavigate: () => jest.fn(),
+    useNavigate: () => navigate,
     Link: ({ children }) => children,
   };
 });

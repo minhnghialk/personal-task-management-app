@@ -74,6 +74,9 @@
     "transformIgnorePatterns": [
       "/node_modules/(?!@reduxjs/toolkit|react-router-dom|lucide-react)/",
       "/node_modules/(?!(@supabase|nanoid)/)"
+    ],
+    "testMatch": [
+      "<rootDir>/src/tests/**/*.(spec|test).[jt]s?(x)"
     ]
   }
 }
