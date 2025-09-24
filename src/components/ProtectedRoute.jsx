@@ -1,14 +1,10 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { LoginRequiredPage } from "../auth/LoginRequiredPage";
+import { Navigate, useLocation } from "react-router-dom";
 
 export const ProtectedRoute = ({ children }) => {
   const { user } = useSelector((state) => state.auth);
-
-  if (!user) {
-    // Nếu chưa login → hiển thị trang LoginRequiredPage
-    return <LoginRequiredPage />;
-  }
-
+  const location = useLocation();
+  if (!user) return <Navigate to="/login" replace state={{ from: location }} />;
   return children;
 };

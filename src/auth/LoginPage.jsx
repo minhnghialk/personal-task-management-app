@@ -8,7 +8,7 @@ import { ButtonLoading } from "../components/ButtonLoading";
 import { Toast } from "../components/Toast";
 import { TogglePasswordButton } from "../components/TogglePasswordButton";
 import { useNotifyAndNavigate } from "../hooks/useNotifyAndNavigate";
-import { loginUser } from "../auth/authSlice";
+import { loginUser } from "../auth/AuthSlice";
 import { getLoginFields } from "../utils/formFields";
 
 export const LoginPage = () => {

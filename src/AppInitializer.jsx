@@ -1,14 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { restoreSession } from "./auth/authSlice";
+import { restoreSession } from "./auth/AuthSlice";
+import { restoreSupabaseSession } from "./api/authApi";
 
 export const AppInitializer = ({ children }) => {
   const dispatch = useDispatch();
   const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {
-    dispatch(restoreSession());
-    setInitializing(false);
+    (async () => {
+      try {
+        await restoreSupabaseSession();
+        await dispatch(restoreSession()).unwrap();
+      } catch (err) {
+        console.error("Restore session failed:", err);
+      } finally {
+        setInitializing(false);
+      }
+    })();
   }, [dispatch]);
 
   if (initializing) {

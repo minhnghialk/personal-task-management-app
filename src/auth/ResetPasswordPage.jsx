@@ -1,4 +1,3 @@
-// src/auth/ResetPasswordPage.jsx
 import React, { useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { supabase } from "../api/supabaseClient";

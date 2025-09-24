@@ -8,7 +8,7 @@ import { FormInput } from "../components/FormInput";
 import { Checkbox } from "../components/Checkbox";
 import { ButtonLoading } from "../components/ButtonLoading";
 import { Toast } from "../components/Toast";
-import { registerUser } from "../auth/authSlice";
+import { registerUser } from "../auth/AuthSlice";
 import { termsValidation } from "../utils/validation";
 import { TogglePasswordButton } from "../components/TogglePasswordButton";
 import { useNotifyAndNavigate } from "../hooks/useNotifyAndNavigate";
@@ -42,7 +42,10 @@ export const RegisterPage = () => {
     dispatch(registerUser({ email: data.email, password: data.password }))
       .unwrap()
       .then(() =>
-        notify("Đăng ký thành công! Vui lòng kiểm tra email.", "/login")
+        notify(
+          "Đăng ký thành công! Vui lòng kiểm tra email để kích hoạt tài khoản.",
+          "/login"
+        )
       )
       .catch((err) => toast.error(err || "Có lỗi xảy ra. Vui lòng thử lại!"));
   };

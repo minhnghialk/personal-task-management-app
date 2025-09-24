@@ -1,4 +1,3 @@
-// src/pages/DashboardLayout.jsx
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -6,7 +5,7 @@ import { Sidebar } from "../components/Sidebar";
 import { MainHeader } from "../components/MainHeader";
 import { supabase } from "../api/supabaseClient";
 import { toast } from "react-toastify";
-import { logout } from "../auth/authSlice";
+import { logoutUser } from "../auth/AuthSlice";
 
 export const DashboardLayout = () => {
   const dispatch = useDispatch();
@@ -15,7 +14,7 @@ export const DashboardLayout = () => {
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
-      dispatch(logout());
+      dispatch(logoutUser());
       toast.success("Đăng xuất thành công");
     } catch (error) {
       console.error("Logout error:", error);

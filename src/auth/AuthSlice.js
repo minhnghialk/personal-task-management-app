@@ -1,70 +1,59 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { supabase } from "../api/supabaseClient";
+import * as authApi from "../api/authApi";
+import { toast } from "react-toastify";
 
-// Đăng ký
+// --- Async thunks ---
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async ({ email, password }, { rejectWithValue }) => {
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) return rejectWithValue(error.message);
-    return data.user;
+    try {
+      return await authApi.register(email, password);
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
   }
 );
 
-// Đăng nhập
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async ({ email, password, remember }, { rejectWithValue }) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) return rejectWithValue(error.message);
-
-    const session = data.session;
-
-    // Lưu session theo remember
-    if (remember) {
-      localStorage.setItem("supabaseSession", JSON.stringify(session));
-    } else {
-      sessionStorage.setItem("supabaseSession", JSON.stringify(session));
+    try {
+      return await authApi.login(email, password, remember);
+    } catch (err) {
+      return rejectWithValue(err.message);
     }
-
-    return data.user;
   }
 );
 
+export const restoreSession = createAsyncThunk(
+  "auth/restoreSession",
+  async (_, { rejectWithValue }) => {
+    try {
+      const user = authApi.getStoredUser();
+      return user;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const logoutUser = createAsyncThunk(
+  "auth/logoutUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      await authApi.logoutApi();
+      return null;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+// --- Slice ---
 const authSlice = createSlice({
   name: "auth",
-  initialState: {
-    user: null,
-    loading: false,
-    error: null,
-  },
-  reducers: {
-    logout: (state) => {
-      state.user = null;
-      localStorage.removeItem("supabaseSession");
-      sessionStorage.removeItem("supabaseSession");
-      supabase.auth.signOut();
-    },
-    restoreSession: (state) => {
-      const stored =
-        localStorage.getItem("supabaseSession") ||
-        sessionStorage.getItem("supabaseSession");
-
-      if (stored) {
-        try {
-          const session = JSON.parse(stored);
-          state.user = session?.user || null;
-        } catch (e) {
-          console.error("Lỗi parse session:", e);
-          state.user = null;
-        }
-      }
-    },
-  },
+  initialState: { user: null, loading: false, error: null },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       // Register
@@ -74,11 +63,14 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        if (action.payload) {
+          state.user = action.payload;
+        }
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        toast.error(`Đăng ký thất bại: ${action.payload}`);
       })
 
       // Login
@@ -93,9 +85,27 @@ const authSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        toast.error(`Đăng nhập thất bại: ${action.payload}`);
+      })
+
+      // Restore session
+      .addCase(restoreSession.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(restoreSession.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(restoreSession.rejected, (state) => {
+        state.loading = false;
+        state.user = null;
+      })
+
+      // Logout
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.user = null;
       });
   },
 });
 
-export const { logout, restoreSession } = authSlice.actions;
 export default authSlice.reducer;

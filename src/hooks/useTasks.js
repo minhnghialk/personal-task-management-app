@@ -5,7 +5,6 @@ export const useTasks = (user) => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Fetch tasks từ Supabase
   const fetchTasks = useCallback(async () => {
     if (!user) return;
     setLoading(true);
@@ -31,7 +30,6 @@ export const useTasks = (user) => {
     }
   }, [user]);
 
-  // Toggle trạng thái hoàn thành
   const toggleTaskCompletion = useCallback(async (taskId, checked) => {
     let prevStatus = null;
     let newStatus = checked ? "done" : "todo";
@@ -62,8 +60,8 @@ export const useTasks = (user) => {
   }, []);
 
   useEffect(() => {
-    fetchTasks();
-  }, [fetchTasks]);
+    if (user) fetchTasks();
+  }, [user, fetchTasks]);
 
   return { tasks, loading, setTasks, toggleTaskCompletion, fetchTasks };
 };

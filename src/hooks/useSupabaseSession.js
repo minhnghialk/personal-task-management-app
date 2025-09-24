@@ -2,7 +2,7 @@ import React from "react";
 import { useEffect } from "react";
 import { supabase } from "../api/supabaseClient";
 import { useDispatch } from "react-redux";
-import { loginUser } from "../auth/authSlice";
+import { loginUser } from "../auth/AuthSlice";
 
 export const useSupabaseSession = () => {
   const dispatch = useDispatch();
