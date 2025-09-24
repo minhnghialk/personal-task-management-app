@@ -11,7 +11,7 @@ export const AppInitializer = ({ children }) => {
     (async () => {
       try {
         await restoreSupabaseSession();
-        await dispatch(restoreSession()).unwrap();
+        await dispatch(restoreSession());
       } catch (err) {
         console.error("Restore session failed:", err);
       } finally {
