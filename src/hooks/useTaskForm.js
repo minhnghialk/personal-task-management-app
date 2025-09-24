@@ -1,10 +1,9 @@
-import React from "react";
 import { useState } from "react";
-import { supabase } from "../api/supabaseClient";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { createTask } from "../api/taskApi";
 
-export const useTaskForm = ({ onTaskCreated, onClose }) => {
+export const useTaskForm = ({ onTaskCreated, onClose, addTaskToList }) => {
   const user = useSelector((state) => state.auth.user);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -50,8 +49,8 @@ export const useTaskForm = ({ onTaskCreated, onClose }) => {
     setTitle("");
     setDescription("");
     setDeadline("");
-    setPriority("Thấp");
-    setStatus("Chưa làm");
+    setPriority("low");
+    setStatus("todo");
     setChecklist([]);
     setNewItem("");
     setErrors({});
@@ -63,23 +62,17 @@ export const useTaskForm = ({ onTaskCreated, onClose }) => {
 
     setLoading(true);
     try {
-      const { data: taskData, error } = await supabase
-        .from("tasks")
-        .insert([
-          {
-            title,
-            description,
-            deadline,
-            priority,
-            status,
-            checklist,
-            user_id: user?.id,
-          },
-        ])
-        .select()
-        .single();
+      const taskData = await createTask({
+        title,
+        description,
+        deadline,
+        priority,
+        status,
+        checklist,
+        user_id: user?.id,
+      });
 
-      if (error) throw error;
+      if (addTaskToList) addTaskToList(taskData);
 
       resetForm();
       if (onTaskCreated) onTaskCreated(taskData);

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { supabase } from "../api/supabaseClient";
+import { getTasks, updateTask } from "../api/taskApi";
+import { toast } from "react-toastify";
 
 export const useTasks = (user) => {
   const [tasks, setTasks] = useState([]);
@@ -9,59 +10,60 @@ export const useTasks = (user) => {
     if (!user) return;
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("tasks")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-
-      const tasksWithPrev = (data || []).map((t) => ({
-        ...t,
-        prevStatus: t.status,
-      }));
-
-      setTasks(tasksWithPrev);
+      const data = await getTasks(user.id);
+      setTasks(data);
     } catch (err) {
-      console.error("Error fetching tasks:", err.message);
+      console.error(err);
+      toast.error("Failed to load tasks");
     } finally {
       setLoading(false);
     }
   }, [user]);
 
-  const toggleTaskCompletion = useCallback(async (taskId, checked) => {
-    let prevStatus = null;
-    let newStatus = checked ? "done" : "todo";
+  const updateTaskField = useCallback(async (taskId, updatedFields) => {
+    setTasks((prevTasks) => {
+      const snapshot = prevTasks.find((t) => t.id === taskId);
+      if (!snapshot) return prevTasks;
 
-    setTasks((prev) =>
-      prev.map((t) => {
-        if (t.id === taskId) {
-          prevStatus = t.status;
-          return { ...t, status: newStatus, prevStatus: t.status };
-        }
-        return t;
-      })
-    );
-
-    try {
-      const { error } = await supabase
-        .from("tasks")
-        .update({ status: newStatus })
-        .eq("id", taskId);
-
-      if (error) throw error;
-    } catch (err) {
-      console.error("Error updating task:", err.message);
-      setTasks((prev) =>
-        prev.map((t) => (t.id === taskId ? { ...t, status: prevStatus } : t))
+      const updatedTasks = prevTasks.map((t) =>
+        t.id === taskId ? { ...t, ...updatedFields } : t
       );
-    }
+
+      (async () => {
+        try {
+          await updateTask(taskId, updatedFields);
+        } catch (err) {
+          console.error(err);
+          toast.error("Failed to update task");
+
+          setTasks((current) =>
+            current.map((t) => (t.id === taskId ? snapshot : t))
+          );
+        }
+      })();
+
+      return updatedTasks;
+    });
   }, []);
+
+  const toggleTaskCompletion = useCallback(
+    (taskId, checked) => {
+      const newStatus = checked ? "done" : "todo";
+      updateTaskField(taskId, { status: newStatus });
+    },
+    [updateTaskField]
+  );
 
   useEffect(() => {
     if (user) fetchTasks();
   }, [user, fetchTasks]);
 
-  return { tasks, loading, setTasks, toggleTaskCompletion, fetchTasks };
+  return {
+    tasks,
+    loading,
+    setTasks,
+    fetchTasks,
+    updateTaskField,
+    toggleTaskCompletion,
+  };
 };
