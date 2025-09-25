@@ -1,15 +1,12 @@
-// jest.setup.js
-import { TextEncoder, TextDecoder } from "util";
+import { TextEncoder, TextDecoder } from 'util';
 
-// Fix TextEncoder/TextDecoder cho jsdom
 globalThis.TextEncoder = TextEncoder;
 globalThis.TextDecoder = TextDecoder;
 
-// Mock react-router-dom với navigate có thể assert
 export const navigate = jest.fn();
 
-jest.mock("react-router-dom", () => {
-  const actual = jest.requireActual("react-router-dom");
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
   return {
     ...actual,
     useNavigate: () => navigate,
@@ -17,8 +14,7 @@ jest.mock("react-router-dom", () => {
   };
 });
 
-// Mock react-toastify
-jest.mock("react-toastify", () => ({
+jest.mock('react-toastify', () => ({
   toast: {
     success: jest.fn(),
     error: jest.fn(),
@@ -27,9 +23,8 @@ jest.mock("react-toastify", () => ({
   ToastContainer: () => null,
 }));
 
-// Mock fetch toàn cục
 globalThis.fetch = jest.fn(() =>
   Promise.resolve({
     json: () => Promise.resolve({}),
-  })
+  }),
 );

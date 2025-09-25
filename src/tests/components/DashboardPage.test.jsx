@@ -1,14 +1,14 @@
 // src/tests/pages/DashboardPage.test.jsx
-import React from "react";
-import { render, screen } from "@testing-library/react";
-import { DashboardPage } from "../../pages/Dashboard";
-import { useSelector } from "react-redux";
-import { useTasks } from "../../hooks/useTasks";
-import { TaskSection } from "../../components/TaskSection";
-import { StatsSection } from "../../components/StatsSection";
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import { DashboardPage } from '../../pages/DashboardIndex';
+import { useSelector } from 'react-redux';
+import { useTasks } from '../../hooks/useTasks';
+import { TaskSection } from '../../components/TaskSection';
+import { StatsSection } from '../../components/StatsSection';
 
 // ------------------ Mock Supabase ------------------
-jest.mock("../../api/supabaseClient", () => ({
+jest.mock('../../api/supabaseClient', () => ({
   supabase: {
     from: jest.fn().mockReturnThis(),
     select: jest.fn().mockReturnThis(),
@@ -19,23 +19,23 @@ jest.mock("../../api/supabaseClient", () => ({
 }));
 
 // ------------------ Mock Redux ------------------
-jest.mock("react-redux", () => ({
+jest.mock('react-redux', () => ({
   useSelector: jest.fn(),
 }));
 
 // ------------------ Mock hook useTasks ------------------
-jest.mock("../../hooks/useTasks");
+jest.mock('../../hooks/useTasks');
 
 // ------------------ Mock Components ------------------
-jest.mock("../../components/TaskSection", () => ({
+jest.mock('../../components/TaskSection', () => ({
   TaskSection: jest.fn(() => <div data-testid="task-section" />),
 }));
 
-jest.mock("../../components/StatsSection", () => ({
+jest.mock('../../components/StatsSection', () => ({
   StatsSection: jest.fn(() => <div data-testid="stats-section" />),
 }));
 
-describe("DashboardPage", () => {
+describe('DashboardPage', () => {
   const mockSetTasks = jest.fn();
   const mockToggleTaskCompletion = jest.fn();
 
@@ -43,13 +43,13 @@ describe("DashboardPage", () => {
     jest.clearAllMocks();
 
     // Mock Redux user
-    useSelector.mockReturnValue({ email: "test@example.com" });
+    useSelector.mockReturnValue({ email: 'test@example.com' });
 
     // Mock useTasks hook
     useTasks.mockReturnValue({
       tasks: [
-        { id: "1", title: "Task 1", status: "todo" },
-        { id: "2", title: "Task 2", status: "done" },
+        { id: '1', title: 'Task 1', status: 'todo' },
+        { id: '2', title: 'Task 2', status: 'done' },
       ],
       loading: false,
       setTasks: mockSetTasks,
@@ -57,18 +57,18 @@ describe("DashboardPage", () => {
     });
   });
 
-  it("should render TaskSection and StatsSection", () => {
+  it('should render TaskSection and StatsSection', () => {
     render(<DashboardPage />);
 
-    expect(screen.getByTestId("task-section")).toBeInTheDocument();
-    expect(screen.getByTestId("stats-section")).toBeInTheDocument();
+    expect(screen.getByTestId('task-section')).toBeInTheDocument();
+    expect(screen.getByTestId('stats-section')).toBeInTheDocument();
   });
 
-  it("should call setTasks when onTaskCreated is triggered", () => {
+  it('should call setTasks when onTaskCreated is triggered', () => {
     render(<DashboardPage />);
 
     const taskSectionProps = TaskSection.mock.calls[0][0];
-    const newTask = { id: "3", title: "New Task", status: "todo" };
+    const newTask = { id: '3', title: 'New Task', status: 'todo' };
 
     // Trigger onTaskCreated callback
     taskSectionProps.onTaskCreated(newTask);
@@ -82,11 +82,11 @@ describe("DashboardPage", () => {
     expect(result).toEqual([newTask, ...prevTasks]);
   });
 
-  it("should call toggleTaskCompletion when onToggleCompletion is triggered", () => {
+  it('should call toggleTaskCompletion when onToggleCompletion is triggered', () => {
     render(<DashboardPage />);
 
     const taskSectionProps = TaskSection.mock.calls[0][0];
-    const taskId = "1";
+    const taskId = '1';
 
     taskSectionProps.onToggleCompletion(taskId);
 
