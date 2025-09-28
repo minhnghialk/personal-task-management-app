@@ -1,8 +1,8 @@
-import React from "react";
-import { formatDate } from "../utils/date";
-import { TaskPriorityBadge } from "./TaskPriorityBadge";
-import { TaskStatusBadge } from "./TaskStatusBadge";
-import { ChecklistView } from "./ChecklistView";
+import React from 'react';
+import { formatDate } from '../utils/date';
+import { TaskPriorityBadge } from './TaskPriorityBadge';
+import { TaskStatusBadge } from './TaskStatusBadge';
+import { ChecklistView } from './ChecklistView';
 
 export const TaskRowDesktop = ({ task, onToggleCompletion }) => {
   return (
@@ -11,14 +11,12 @@ export const TaskRowDesktop = ({ task, onToggleCompletion }) => {
         <input
           type="checkbox"
           className="w-4 h-4 accent-blue-500"
-          checked={task.status === "done"}
+          checked={task.status === 'done'}
           onChange={(e) => onToggleCompletion(task.id, e.target.checked)}
           aria-label={task.title}
           data-testid={`desktop-checkbox-${task.id}`}
         />
-        <span
-          className={task.status === "done" ? "line-through text-gray-400" : ""}
-        >
+        <span className={task.status === 'done' ? 'line-through text-gray-400' : ''}>
           {task.title}
         </span>
       </td>

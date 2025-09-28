@@ -1,8 +1,8 @@
-import React from "react";
-import { formatDate } from "../utils/date";
-import { TaskPriorityBadge } from "./TaskPriorityBadge";
-import { TaskStatusBadge } from "./TaskStatusBadge";
-import { ChecklistView } from "./ChecklistView";
+import React from 'react';
+import { formatDate } from '../utils/date';
+import { TaskPriorityBadge } from './TaskPriorityBadge';
+import { TaskStatusBadge } from './TaskStatusBadge';
+import { ChecklistView } from './ChecklistView';
 
 export const TaskCardMobile = ({ task, onToggleCompletion }) => {
   return (
@@ -12,14 +12,14 @@ export const TaskCardMobile = ({ task, onToggleCompletion }) => {
         <input
           type="checkbox"
           className="w-5 h-5 accent-blue-500"
-          checked={task.status === "done"}
+          checked={task.status === 'done'}
           onChange={(e) => onToggleCompletion(task.id, e.target.checked)}
           aria-label={task.title}
           data-testid={`mobile-checkbox-${task.id}`}
         />
         <span
           className={`font-semibold text-gray-900 text-lg ${
-            task.status === "done" ? "line-through text-gray-400" : ""
+            task.status === 'done' ? 'line-through text-gray-400' : ''
           }`}
         >
           {task.title}
@@ -54,9 +54,7 @@ export const TaskCardMobile = ({ task, onToggleCompletion }) => {
 
       {/* Action button */}
       <div className="mt-3 flex justify-end">
-        <button className="text-blue-600 text-sm font-semibold hover:underline">
-          Xem
-        </button>
+        <button className="text-blue-600 text-sm font-semibold hover:underline">Xem</button>
       </div>
     </div>
   );

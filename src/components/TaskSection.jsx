@@ -1,13 +1,8 @@
-import React from "react";
-import { TaskTable } from "./TaskTable";
-import { LoadingDots } from "./LoadingDots";
+import React from 'react';
+import { TaskTable } from './TaskTable';
+import { LoadingDots } from './LoadingDots';
 
-export const TaskSection = ({
-  tasks,
-  loading,
-  onTaskCreated,
-  onToggleCompletion,
-}) => {
+export const TaskSection = ({ tasks, loading, onTaskCreated, onToggleCompletion }) => {
   if (loading) return <LoadingDots />;
   return (
     <TaskTable

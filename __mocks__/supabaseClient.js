@@ -1,5 +1,5 @@
 // __mocks__/supabaseClient.js
-import { jest } from "@jest/globals";
+import { jest } from '@jest/globals';
 
 export const supabase = {
   auth: {

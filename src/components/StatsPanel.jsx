@@ -1,11 +1,9 @@
-import React from "react";
+import React from 'react';
 
 export const StatsPanel = ({ stats }) => (
   <div className="bg-white rounded-2xl shadow p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
     <div>
-      <h2 className="text-xl font-bold text-gray-900 mb-4">
-        Dashboard thống kê nhanh
-      </h2>
+      <h2 className="text-xl font-bold text-gray-900 mb-4">Dashboard thống kê nhanh</h2>
       <div className="grid grid-cols-2 gap-2 text-sm text-gray-700">
         <div>Tổng số Task</div>
         <div>{stats.total}</div>

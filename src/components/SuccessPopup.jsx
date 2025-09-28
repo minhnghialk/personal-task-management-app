@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 export const SuccessPopup = ({ open, onClose, message, subMessage }) => {
   if (!open) return null;
@@ -15,9 +15,7 @@ export const SuccessPopup = ({ open, onClose, message, subMessage }) => {
 
         {/* Nội dung */}
         <p className="text-gray-800 font-medium mb-2">{message}</p>
-        {subMessage && (
-          <p className="text-gray-500 text-sm mb-4">{subMessage}</p>
-        )}
+        {subMessage && <p className="text-gray-500 text-sm mb-4">{subMessage}</p>}
 
         {/* Nút đóng */}
         <button

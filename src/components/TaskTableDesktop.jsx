@@ -1,5 +1,5 @@
-import React from "react";
-import { TaskRowDesktop } from "./TaskRowDesktop";
+import React from 'react';
+import { TaskRowDesktop } from './TaskRowDesktop';
 
 export const TaskTableDesktop = ({ tasks, onToggleCompletion }) => (
   <div className="hidden lg:block overflow-x-auto">
@@ -17,11 +17,7 @@ export const TaskTableDesktop = ({ tasks, onToggleCompletion }) => (
       <tbody>
         {tasks.length > 0 ? (
           tasks.map((task) => (
-            <TaskRowDesktop
-              key={task.id}
-              task={task}
-              onToggleCompletion={onToggleCompletion}
-            />
+            <TaskRowDesktop key={task.id} task={task} onToggleCompletion={onToggleCompletion} />
           ))
         ) : (
           <tr>

@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
-import { getTasks, updateTask } from "../api/taskApi";
-import { toast } from "react-toastify";
+import { useState, useEffect, useCallback } from 'react';
+import { getTasks, updateTask } from '../api/taskApi';
+import { toast } from 'react-toastify';
 
 export const useTasks = (user) => {
   const [tasks, setTasks] = useState([]);
@@ -14,7 +14,7 @@ export const useTasks = (user) => {
       setTasks(data);
     } catch (err) {
       console.error(err);
-      toast.error("Failed to load tasks");
+      toast.error('Failed to load tasks');
     } finally {
       setLoading(false);
     }
@@ -25,20 +25,16 @@ export const useTasks = (user) => {
       const snapshot = prevTasks.find((t) => t.id === taskId);
       if (!snapshot) return prevTasks;
 
-      const updatedTasks = prevTasks.map((t) =>
-        t.id === taskId ? { ...t, ...updatedFields } : t
-      );
+      const updatedTasks = prevTasks.map((t) => (t.id === taskId ? { ...t, ...updatedFields } : t));
 
       (async () => {
         try {
           await updateTask(taskId, updatedFields);
         } catch (err) {
           console.error(err);
-          toast.error("Failed to update task");
+          toast.error('Failed to update task');
 
-          setTasks((current) =>
-            current.map((t) => (t.id === taskId ? snapshot : t))
-          );
+          setTasks((current) => current.map((t) => (t.id === taskId ? snapshot : t)));
         }
       })();
 
@@ -48,10 +44,10 @@ export const useTasks = (user) => {
 
   const toggleTaskCompletion = useCallback(
     (taskId, checked) => {
-      const newStatus = checked ? "done" : "todo";
+      const newStatus = checked ? 'done' : 'todo';
       updateTaskField(taskId, { status: newStatus });
     },
-    [updateTaskField]
+    [updateTaskField],
   );
 
   useEffect(() => {
